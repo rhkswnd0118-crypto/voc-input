@@ -4,10 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>현장의 소리(일룸)</title>
-
   <style>
     * { box-sizing: border-box; }
-
     body{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background:#f6f7fb;
@@ -15,7 +13,6 @@
       padding:24px;
       color:#111;
     }
-
     .wrap{
       max-width: 980px;
       margin: 0 auto;
@@ -24,60 +21,65 @@
       padding: 22px;
       box-shadow: 0 10px 30px rgba(0,0,0,.06);
     }
+    h1{ margin: 0 0 18px; font-size: 22px; }
 
-    /* ===== 헤더 ===== */
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between; /* ← 우측 고정 핵심 */
-      margin-bottom:18px;
-    }
-
-    .header h1{
-      margin:0;
-      font-size:22px;
-    }
-
-    .logo{
-      height:28px;
-      object-fit:contain;
-    }
-
-    @media (max-width:600px){
-      .logo{ height:22px; }
-    }
-
-    /* ===== 폼 ===== */
     .grid{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:14px;
+      gap: 14px;
     }
-
-    @media (max-width:820px){
-      .grid{ grid-template-columns:1fr; }
+    @media (max-width: 820px){
+      .grid{ grid-template-columns: 1fr; }
     }
 
     .field label{
       display:block;
-      font-size:12px;
+      font-size: 12px;
       color:#555;
-      margin-bottom:6px;
+      margin: 0 0 6px;
     }
 
     input, select, textarea{
       width:100%;
       border:1px solid #dcdfe6;
-      border-radius:12px;
-      padding:11px 12px;
-      font-size:14px;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 14px;
       background:#fff;
+      outline:none;
+    }
+    input, select { height: 44px; }
+    textarea{ min-height: 96px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus{
+      border-color:#4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,.12);
     }
 
-    input, select{ height:44px; }
-    textarea{ min-height:96px; resize:vertical; }
+    .full{ grid-column: 1 / -1; }
 
-    .full{ grid-column:1 / -1; }
+    .section{
+      margin-top: 14px;
+      border: 1px solid #eef0f5;
+      background:#fafbff;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .section-title{
+      font-weight: 800;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    @media (max-width: 820px){
+      .row{ grid-template-columns: 1fr; }
+    }
 
     .hint{
       margin-top:6px;
@@ -85,182 +87,275 @@
       color:#666;
     }
 
-    .section{
-      margin-top:14px;
-      border:1px solid #eef0f5;
-      background:#fafbff;
-      border-radius:16px;
-      padding:16px;
-    }
-
-    .section-title{
-      font-weight:800;
-      margin-bottom:12px;
-      font-size:14px;
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns:2fr 1fr;
-      gap:12px;
-    }
-
-    @media (max-width:820px){
-      .row{ grid-template-columns:1fr; }
-    }
-
     .actions{
-      margin-top:16px;
+      margin-top: 16px;
       display:flex;
-      gap:10px;
+      gap: 10px;
       align-items:center;
+      flex-wrap: wrap;
     }
-
     button{
       border:0;
-      border-radius:14px;
-      padding:12px 16px;
-      font-size:15px;
-      font-weight:800;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 800;
       cursor:pointer;
       background:#4f46e5;
       color:#fff;
     }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .msg{ font-size: 14px; }
+    .ok{ color:#0a7a2f; }
+    .err{ color:#b00020; }
   </style>
 </head>
-
 <body>
-<div class="wrap">
-
-  <!-- ✅ 헤더 (타이틀 좌 / 로고 우) -->
-  <div class="header">
+  <div class="wrap">
     <h1>현장의 소리(일룸)</h1>
-    <img src="./assets/iloom-logo.png" alt="일룸 로고" class="logo" />
-  </div>
 
-  <form id="vocForm">
-    <div class="grid">
-
-      <div class="field">
-        <label>이름</label>
-        <input name="name" />
-      </div>
-
-      <div class="field">
-        <label>소속팀</label>
-        <input name="team" list="teamList" />
-        <datalist id="teamList">
-          <option value="마케팅팀"></option>
-          <option value="고객문제정의팀"></option>
-          <option value="신유통개발팀"></option>
-          <option value="리테일사업팀"></option>
-          <option value="유통경쟁력강화팀"></option>
-          <option value="유통경쟁력강화팀(P-SHOP)"></option>
-          <option value="영업효율개선팀"></option>
-          <option value="온라인CX개선팀"></option>
-          <option value="브랜드경험디자인팀"></option>
-          <option value="일룸SCM팀"></option>
-          <option value="일룸구매팀"></option>
-          <option value="일룸 재경팀"></option>
-          <option value="품질관리팀"></option>
-          <option value="연구소"></option>
-          <option value="MD사업팀"></option>
-        </datalist>
-      </div>
-
-      <div class="field">
-        <label>VOC 발생일</label>
-        <input type="date" name="vocDate" />
-      </div>
-
-      <div class="field">
-        <label>출처</label>
-        <input name="source" placeholder="전화 / 카카오 / 현장 등" />
-      </div>
-
-      <!-- 매장명 -->
-      <div class="field full">
-        <label>매장명</label>
-
-        <select id="storeSelect" style="display:none;">
-          <option value="">매장 선택</option>
-          <option>논현4</option>
-          <option>강동아이파크</option>
-          <option>송파4</option>
-          <option>용산2</option>
-          <option>마포2</option>
-          <option>노원</option>
-          <option>수원광교3</option>
-          <option>분당서현</option>
-          <option>대전둔산5</option>
-          <option>대구3</option>
-          <option>부산센텀4</option>
-        </select>
-
-        <input id="storeInput" placeholder="매장명을 직접 입력하세요" />
-
-        <div class="hint">
-          ※ 매장 관련 내용이 아니라면 기재하지 않고 넘어가셔도 됩니다.
+    <form id="vocForm" autocomplete="off">
+      <div class="grid">
+        <div class="field">
+          <label>이름</label>
+          <input name="name" required />
         </div>
 
-        <input type="hidden" name="storeChannel" id="storeChannel" />
-      </div>
+        <div class="field">
+          <label>소속팀</label>
+          <input
+            name="team"
+            list="teamList"
+            placeholder="팀명을 입력하거나 선택하세요"
+            required
+          />
+          <datalist id="teamList">
+            <option value="마케팅팀"></option>
+            <option value="고객문제정의팀"></option>
+            <option value="신유통개발팀"></option>
+            <option value="리테일사업팀"></option>
+            <option value="유통경쟁력강화팀"></option>
+            <option value="유통경쟁력강화팀(P-SHOP)"></option>
+            <option value="영업효율개선팀"></option>
+            <option value="온라인CX개선팀"></option>
+            <option value="브랜드경험디자인팀"></option>
+            <option value="일룸SCM팀"></option>
+            <option value="일룸구매팀"></option>
+            <option value="일룸 재경팀"></option>
+            <option value="품질관리팀"></option>
+            <option value="연구소"></option>
+            <option value="MD사업팀"></option>
+          </datalist>
+        </div>
 
-      <!-- 주요내용 -->
-      <div class="section full">
-        <div class="section-title">주요내용</div>
-        <textarea name="detail1"></textarea>
-      </div>
+        <div class="field">
+          <label>VOC 발생일</label>
+          <input type="date" name="vocDate" />
+        </div>
 
-      <div class="actions full">
-        <button type="submit">저장</button>
-      </div>
+        <div class="field">
+          <label>출처</label>
+          <input name="source" placeholder="전화 / 카카오 / 현장 등" />
+        </div>
 
-    </div>
-  </form>
-</div>
+        <!-- ✅ 매장명: P-SHOP 팀일 때만 드롭다운 -->
+        <div class="field full">
+          <label>매장명</label>
+
+          <!-- P-SHOP 전용 드롭다운(직영 11개점) -->
+          <select id="storeSelect" style="display:none;">
+            <option value="">매장 선택</option>
+            <option>논현4</option>
+            <option>강동아이파크</option>
+            <option>송파4</option>
+            <option>용산2</option>
+            <option>마포2</option>
+            <option>노원</option>
+            <option>수원광교3</option>
+            <option>분당서현</option>
+            <option>대전둔산5</option>
+            <option>대구3</option>
+            <option>부산센텀4</option>
+          </select>
+
+          <!-- 그 외 팀: 텍스트 입력 -->
+          <input id="storeInput" placeholder="매장명을 직접 입력하세요" />
+
+          <div class="hint">
+            ※ 매장 관련 내용이 아니라면 기재하지 않고 넘어가셔도 됩니다.
+          </div>
+
+          <!-- 서버 전송용 -->
+          <input type="hidden" name="storeChannel" id="storeChannel" />
+        </div>
+
+        <div class="section full">
+          <div class="section-title">주요내용 1</div>
+          <div class="row">
+            <div class="field">
+              <label>내용 (자세히)</label>
+              <textarea name="detail1"></textarea>
+            </div>
+            <div class="field">
+              <label>카테고리</label>
+              <select name="category1">
+                <option value="">선택</option>
+                <option>제품</option>
+                <option>배송/설치</option>
+                <option>A/S</option>
+                <option>매장응대</option>
+                <option>정책/가격</option>
+                <option>기타</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section full">
+          <div class="section-title">주요내용 2</div>
+          <div class="row">
+            <div class="field">
+              <label>내용 (자세히)</label>
+              <textarea name="detail2"></textarea>
+            </div>
+            <div class="field">
+              <label>카테고리</label>
+              <select name="category2">
+                <option value="">선택</option>
+                <option>제품</option>
+                <option>배송/설치</option>
+                <option>A/S</option>
+                <option>매장응대</option>
+                <option>정책/가격</option>
+                <option>기타</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section full">
+          <div class="section-title">주요내용 3</div>
+          <div class="row">
+            <div class="field">
+              <label>내용 (자세히)</label>
+              <textarea name="detail3"></textarea>
+            </div>
+            <div class="field">
+              <label>카테고리</label>
+              <select name="category3">
+                <option value="">선택</option>
+                <option>제품</option>
+                <option>배송/설치</option>
+                <option>A/S</option>
+                <option>매장응대</option>
+                <option>정책/가격</option>
+                <option>기타</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions full">
+          <button type="submit" id="submitBtn">저장</button>
+          <span class="msg" id="msg"></span>
+        </div>
+      </div>
+    </form>
+  </div>
 
 <script>
-  const teamInput   = document.querySelector('input[name="team"]');
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbwnHwXa6eA36EhH-bkTZVDYMjmICA7ciXg-H_aoHDDExK8LNHX6C-YISmfa56Ar_RWUSQ/exec";
+
+  const form = document.getElementById("vocForm");
+  const btn  = document.getElementById("submitBtn");
+  const msg  = document.getElementById("msg");
+
+  const teamInput   = form.querySelector('input[name="team"]');
   const storeSelect = document.getElementById("storeSelect");
   const storeInput  = document.getElementById("storeInput");
   const storeHidden = document.getElementById("storeChannel");
 
-  function normalize(v){
-    return (v || "").replace(/\s+/g,"").toUpperCase();
+  function normalizeTeam(v){
+    return (v || "").replace(/\s+/g, "").toUpperCase();
   }
 
-  function isPSHOP(){
-    const t = normalize(teamInput.value);
-    return t === normalize("유통경쟁력강화팀(P-SHOP)");
+  function isPSHOPTeam(){
+    const t = normalizeTeam(teamInput.value);
+    // 공백/대소문자/과거 오타 방어
+    return (
+      t === normalizeTeam("유통경쟁력강화팀(P-SHOP)") ||
+      t === normalizeTeam("유통경쟁력강화팀(P-SOHP)")
+    );
   }
 
-  function toggleStore(){
-    if(isPSHOP()){
-      storeSelect.style.display="";
-      storeInput.style.display="none";
-      storeInput.value="";
-    }else{
-      storeSelect.style.display="none";
-      storeSelect.value="";
-      storeInput.style.display="";
+  function toggleStoreUI(){
+    if (isPSHOPTeam()) {
+      storeSelect.style.display = "";
+      storeInput.style.display  = "none";
+      storeInput.value = "";
+    } else {
+      storeSelect.style.display = "none";
+      storeSelect.value = "";
+      storeInput.style.display  = "";
     }
-    sync();
+    syncStoreHidden();
   }
 
-  function sync(){
-    storeHidden.value =
-      storeSelect.style.display !== "none"
-        ? storeSelect.value
-        : storeInput.value.trim();
+  function syncStoreHidden(){
+    if (storeSelect.style.display !== "none") {
+      storeHidden.value = storeSelect.value || "";
+    } else {
+      storeHidden.value = (storeInput.value || "").trim();
+    }
   }
 
-  teamInput.addEventListener("input", toggleStore);
-  storeSelect.addEventListener("change", sync);
-  storeInput.addEventListener("input", sync);
+  teamInput.addEventListener("input", toggleStoreUI);
+  teamInput.addEventListener("change", toggleStoreUI);
+  storeSelect.addEventListener("change", syncStoreHidden);
+  storeInput.addEventListener("input", syncStoreHidden);
 
-  toggleStore();
+  document.addEventListener("DOMContentLoaded", toggleStoreUI);
+  toggleStoreUI();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    syncStoreHidden();
+
+    btn.disabled = true;
+    msg.textContent = "";
+    msg.className = "msg";
+
+    const payload = Object.fromEntries(new FormData(form).entries());
+    payload.storeChannel = storeHidden.value || "";
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (result.ok) {
+        msg.textContent = "✅ 저장 완료";
+        msg.classList.add("ok");
+        form.reset();
+        storeHidden.value = "";
+        toggleStoreUI();
+      } else {
+        msg.textContent = "❌ 저장 실패";
+        msg.classList.add("err");
+      }
+    } catch (err) {
+      msg.textContent = "❌ 네트워크/권한 오류";
+      msg.classList.add("err");
+    } finally {
+      btn.disabled = false;
+    }
+  });
 </script>
-
 </body>
 </html>
