@@ -109,24 +109,23 @@
     .msg{ font-size: 14px; }
     .ok{ color:#0a7a2f; }
     .err{ color:#b00020; }
+  /* === 헤더: 타이틀 좌 / 로고 우 === */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin: 0 0 18px;
+}
+.header h1{ margin:0; }
+.logo{
+  height:42px;
+  object-fit:contain;
+}
+@media (max-width:600px){
+  .logo{ height:32px; }
+}
 
-    /* === 헤더: 타이틀 좌 / 로고 우 === */
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin: 0 0 18px;
-    }
-    .header h1{ margin:0; }
-    .logo{
-      height:28px;
-      object-fit:contain;
-    }
-    @media (max-width:600px){
-      .logo{ height:22px; }
-    }
-
-  </style>
+</style>
 </head>
 <body>
   <div class="wrap">
