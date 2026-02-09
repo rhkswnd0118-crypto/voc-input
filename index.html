@@ -131,6 +131,8 @@
             <option value="신유통개발팀"></option>
             <option value="리테일사업팀"></option>
             <option value="유통경쟁력강화팀"></option>
+            <option value="유통경쟁력강화팀(P-SHOP)"></option>
+            <option value="유통경쟁력강화팀 (P-SHOP)"></option>
             <option value="유통경쟁령강화팀(P-SOHP)"></option>
             <option value="영업효율개선팀"></option>
             <option value="온라인CX개선팀"></option>
@@ -154,10 +156,12 @@
           <input name="source" placeholder="전화 / 카카오 / 현장 등" />
         </div>
 
-        <!-- ✅ 매장명: 드롭다운 -->
+        <!-- ✅ 매장명: 팀에 따라 드롭다운/직접입력 토글 -->
         <div class="field full">
           <label>매장명</label>
-          <select name="storeChannel" required>
+
+          <!-- 드롭다운(유통경쟁력강화팀(P-SHOP) 전용) -->
+          <select name="storeChannelSelect" id="storeSelect">
             <option value="">매장 선택</option>
             <option>논현4</option>
             <option>강동아이파크</option>
@@ -171,6 +175,17 @@
             <option>대구3</option>
             <option>부산센텀4</option>
           </select>
+
+          <!-- 직접입력(그 외 팀용) -->
+          <input
+            name="storeChannelInput"
+            id="storeInput"
+            placeholder="매장명을 직접 입력하세요"
+            style="display:none;"
+          />
+
+          <!-- 실제로 서버로 전송되는 값(항상 이 필드 하나로 통일) -->
+          <input type="hidden" name="storeChannel" id="storeChannel" />
         </div>
 
         <div class="section full">
@@ -255,13 +270,83 @@
   const btn  = document.getElementById("submitBtn");
   const msg  = document.getElementById("msg");
 
+  const teamInput   = form.querySelector('input[name="team"]');
+  const storeSelect = document.getElementById("storeSelect");
+  const storeInput  = document.getElementById("storeInput");
+  const storeHidden = document.getElementById("storeChannel");
+
+  // ✅ 이 팀명일 때만 매장 드롭다운 활성화
+  const PSHOP_TEAM_SET = new Set([
+    "유통경쟁력강화팀(P-SHOP)",
+    "유통경쟁력강화팀 (P-SHOP)",
+  ]);
+
+  function syncStoreHidden() {
+    if (storeSelect.style.display !== "none") {
+      storeHidden.value = storeSelect.value || "";
+    } else {
+      storeHidden.value = (storeInput.value || "").trim();
+    }
+  }
+
+  function toggleStoreMode() {
+    const teamVal = (teamInput.value || "").trim();
+    const isPSHOP = PSHOP_TEAM_SET.has(teamVal);
+
+    if (isPSHOP) {
+      // 드롭다운 ON
+      storeSelect.style.display = "";
+      storeSelect.disabled = false;
+      storeSelect.required = true;
+
+      // 직접입력 OFF
+      storeInput.style.display = "none";
+      storeInput.disabled = true;
+      storeInput.required = false;
+      storeInput.value = "";
+
+      syncStoreHidden();
+    } else {
+      // 직접입력 ON
+      storeInput.style.display = "";
+      storeInput.disabled = false;
+      storeInput.required = true;
+
+      // 드롭다운 OFF
+      storeSelect.style.display = "none";
+      storeSelect.disabled = true;
+      storeSelect.required = false;
+      storeSelect.value = "";
+
+      syncStoreHidden();
+    }
+  }
+
+  teamInput.addEventListener("input", toggleStoreMode);
+  teamInput.addEventListener("change", toggleStoreMode);
+  storeSelect.addEventListener("change", syncStoreHidden);
+  storeInput.addEventListener("input", syncStoreHidden);
+
+  // 최초 상태 세팅
+  toggleStoreMode();
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // 제출 직전 동기화(안전장치)
+    syncStoreHidden();
+
     btn.disabled = true;
     msg.textContent = "";
     msg.className = "msg";
 
+    // payload 생성
     const payload = Object.fromEntries(new FormData(form).entries());
+
+    // 서버에는 storeChannel만 보내고, 보조필드는 제거(시트/Apps Script 안 깨지게)
+    payload.storeChannel = storeHidden.value || "";
+    delete payload.storeChannelSelect;
+    delete payload.storeChannelInput;
 
     try {
       const res = await fetch(SCRIPT_URL, {
@@ -276,6 +361,9 @@
         msg.textContent = "✅ 저장 완료";
         msg.classList.add("ok");
         form.reset();
+
+        // reset 후 토글 다시 맞추기
+        toggleStoreMode();
       } else {
         msg.textContent = "❌ 저장 실패";
         msg.classList.add("err");
