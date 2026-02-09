@@ -107,7 +107,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>현장의 소리(VOC)</h1>
+    <h1>현장의 소리(일룸)</h1>
 
     <form id="vocForm" autocomplete="off">
       <div class="grid">
@@ -116,7 +116,7 @@
           <input name="name" required />
         </div>
 
-        <!-- ✅ 소속팀: 자동완성(타이핑 필터) -->
+        <!-- 소속팀: 자동완성 -->
         <div class="field">
           <label>소속팀</label>
           <input
@@ -155,11 +155,10 @@
           <input name="source" placeholder="전화 / 카카오 / 현장 등" />
         </div>
 
-        <!-- ✅ 매장명: 선택/입력 자유, 필수 아님 -->
+        <!-- 매장명: 선택/입력 자유 + 안내 텍스트 -->
         <div class="field full">
           <label>매장명</label>
 
-          <!-- 드롭다운 -->
           <select name="storeChannelSelect" id="storeSelect">
             <option value="">매장 선택 (선택사항)</option>
             <option>논현4</option>
@@ -175,17 +174,20 @@
             <option>부산센텀4</option>
           </select>
 
-          <!-- 직접 입력 -->
           <input
             name="storeChannelInput"
             id="storeInput"
-            placeholder="(매장 관련이 아니라면 기재 안하고 넘어가주시면 됩니다.)"
+            placeholder="매장명을 직접 입력하실 경우에만 작성해주세요"
           />
 
-          <!-- 서버 전송용(항상 이 필드 하나로 통일) -->
+          <div style="margin-top:6px; font-size:12px; color:#666;">
+            ※ 매장 관련 내용이 아니라면 기재하지 않고 넘어가셔도 됩니다.
+          </div>
+
           <input type="hidden" name="storeChannel" id="storeChannel" />
         </div>
 
+        <!-- 주요내용 1 -->
         <div class="section full">
           <div class="section-title">주요내용 1</div>
           <div class="row">
@@ -208,6 +210,7 @@
           </div>
         </div>
 
+        <!-- 주요내용 2 -->
         <div class="section full">
           <div class="section-title">주요내용 2</div>
           <div class="row">
@@ -230,6 +233,7 @@
           </div>
         </div>
 
+        <!-- 주요내용 3 -->
         <div class="section full">
           <div class="section-title">주요내용 3</div>
           <div class="row">
@@ -273,7 +277,6 @@
   const storeHidden = document.getElementById("storeChannel");
 
   function syncStoreHidden() {
-    // select가 선택되었으면 그 값 우선, 아니면 input 값 사용
     if (storeSelect.value) {
       storeHidden.value = storeSelect.value;
     } else {
@@ -287,7 +290,6 @@
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 제출 직전 동기화(안전장치)
     syncStoreHidden();
 
     btn.disabled = true;
@@ -295,8 +297,6 @@
     msg.className = "msg";
 
     const payload = Object.fromEntries(new FormData(form).entries());
-
-    // 서버에는 storeChannel만 보내고, 보조필드는 제거(시트/Apps Script 안 깨지게)
     payload.storeChannel = storeHidden.value || "";
     delete payload.storeChannelSelect;
     delete payload.storeChannelInput;
@@ -314,8 +314,6 @@
         msg.textContent = "✅ 저장 완료";
         msg.classList.add("ok");
         form.reset();
-
-        // reset 후 hidden 비우기
         storeHidden.value = "";
       } else {
         msg.textContent = "❌ 저장 실패";
