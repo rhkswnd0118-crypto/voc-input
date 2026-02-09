@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>현장의 소리(VOC)</title>
+  <title>현장의 소리(일룸)</title>
   <style>
     * { box-sizing: border-box; }
     body{
@@ -126,24 +126,23 @@
             required
           />
           <datalist id="teamList">
-  <option value="마케팅팀"></option>
-  <option value="고객문제정의팀"></option>
-  <option value="신유통개발팀"></option>
-  <option value="리테일사업팀"></option>
-
-  <!-- ✅ 이것만 남김 -->
-  <option value="유통경쟁력강화팀"></option>
-  <option value="유통경쟁령강화팀(P-SOHP)"></option>
-  <option value="영업효율개선팀"></option>
-  <option value="온라인CX개선팀"></option>
-  <option value="브랜드경험디자인팀"></option>
-  <option value="일룸 SCM팀"></option>
-  <option value="일룸 구매팀"></option>
-  <option value="일룸 재경팀"></option>
-  <option value="품질관리팀"></option>
-  <option value="연구소"></option>
-  <option value="MD사업팀"></option>
-</datalist>
+            <option value="마케팅팀"></option>
+            <option value="고객문제정의팀"></option>
+            <option value="신유통개발팀"></option>
+            <option value="리테일사업팀"></option>
+            <option value="유통경쟁력강화팀"></option>
+            <option value="유통경쟁력강화팀(P-SHOP)"></option>
+            <option value="유통경쟁령강화팀(P-SOHP)"></option>
+            <option value="영업효율개선팀"></option>
+            <option value="온라인CX개선팀"></option>
+            <option value="브랜드경험디자인팀"></option>
+            <option value="일룸SCM팀"></option>
+            <option value="일룸구매팀"></option>
+            <option value="일룸 재경팀"></option>
+            <option value="품질관리팀"></option>
+            <option value="연구소"></option>
+            <option value="MD사업팀"></option>
+          </datalist>
         </div>
 
         <div class="field">
@@ -156,13 +155,13 @@
           <input name="source" placeholder="전화 / 카카오 / 현장 등" />
         </div>
 
-        <!-- ✅ 매장명: 팀에 따라 드롭다운/직접입력 토글 -->
+        <!-- ✅ 매장명: 선택/입력 자유, 필수 아님 -->
         <div class="field full">
           <label>매장명</label>
 
-          <!-- 드롭다운(유통경쟁력강화팀(P-SHOP) 전용) -->
+          <!-- 드롭다운 -->
           <select name="storeChannelSelect" id="storeSelect">
-            <option value="">매장 선택</option>
+            <option value="">매장 선택 (선택사항)</option>
             <option>논현4</option>
             <option>강동아이파크</option>
             <option>송파4</option>
@@ -176,15 +175,14 @@
             <option>부산센텀4</option>
           </select>
 
-          <!-- 직접입력(그 외 팀용) -->
+          <!-- 직접 입력 -->
           <input
             name="storeChannelInput"
             id="storeInput"
-            placeholder="매장명을 직접 입력하세요"
-            style="display:none;"
+            placeholder="(매장 관련이 아니라면 기재 안하고 넘어가주시면 됩니다.)"
           />
 
-          <!-- 실제로 서버로 전송되는 값(항상 이 필드 하나로 통일) -->
+          <!-- 서버 전송용(항상 이 필드 하나로 통일) -->
           <input type="hidden" name="storeChannel" id="storeChannel" />
         </div>
 
@@ -270,65 +268,21 @@
   const btn  = document.getElementById("submitBtn");
   const msg  = document.getElementById("msg");
 
-  const teamInput   = form.querySelector('input[name="team"]');
   const storeSelect = document.getElementById("storeSelect");
   const storeInput  = document.getElementById("storeInput");
   const storeHidden = document.getElementById("storeChannel");
 
-  // ✅ 이 팀명일 때만 매장 드롭다운 활성화
-  const PSHOP_TEAM_SET = new Set([
-    "유통경쟁력강화팀(P-SHOP)",
-    "유통경쟁력강화팀 (P-SHOP)",
-  ]);
-
   function syncStoreHidden() {
-    if (storeSelect.style.display !== "none") {
-      storeHidden.value = storeSelect.value || "";
+    // select가 선택되었으면 그 값 우선, 아니면 input 값 사용
+    if (storeSelect.value) {
+      storeHidden.value = storeSelect.value;
     } else {
       storeHidden.value = (storeInput.value || "").trim();
     }
   }
 
-  function toggleStoreMode() {
-    const teamVal = (teamInput.value || "").trim();
-    const isPSHOP = PSHOP_TEAM_SET.has(teamVal);
-
-    if (isPSHOP) {
-      // 드롭다운 ON
-      storeSelect.style.display = "";
-      storeSelect.disabled = false;
-      storeSelect.required = true;
-
-      // 직접입력 OFF
-      storeInput.style.display = "none";
-      storeInput.disabled = true;
-      storeInput.required = false;
-      storeInput.value = "";
-
-      syncStoreHidden();
-    } else {
-      // 직접입력 ON
-      storeInput.style.display = "";
-      storeInput.disabled = false;
-      storeInput.required = true;
-
-      // 드롭다운 OFF
-      storeSelect.style.display = "none";
-      storeSelect.disabled = true;
-      storeSelect.required = false;
-      storeSelect.value = "";
-
-      syncStoreHidden();
-    }
-  }
-
-  teamInput.addEventListener("input", toggleStoreMode);
-  teamInput.addEventListener("change", toggleStoreMode);
   storeSelect.addEventListener("change", syncStoreHidden);
   storeInput.addEventListener("input", syncStoreHidden);
-
-  // 최초 상태 세팅
-  toggleStoreMode();
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -340,7 +294,6 @@
     msg.textContent = "";
     msg.className = "msg";
 
-    // payload 생성
     const payload = Object.fromEntries(new FormData(form).entries());
 
     // 서버에는 storeChannel만 보내고, 보조필드는 제거(시트/Apps Script 안 깨지게)
@@ -362,8 +315,8 @@
         msg.classList.add("ok");
         form.reset();
 
-        // reset 후 토글 다시 맞추기
-        toggleStoreMode();
+        // reset 후 hidden 비우기
+        storeHidden.value = "";
       } else {
         msg.textContent = "❌ 저장 실패";
         msg.classList.add("err");
@@ -378,6 +331,3 @@
 </script>
 </body>
 </html>
-
-
-
