@@ -136,7 +136,7 @@
             <option value="신유통개발팀"></option>
             <option value="리테일사업팀"></option>
             <option value="유통경쟁력강화팀"></option>
-            <option value="유통경쟁령강화팀(P-SHOP)"></option>
+            <option value="유통경쟁력강화팀(P-SHOP)"></option>
             <option value="영업효율개선팀"></option>
             <option value="온라인CX개선팀"></option>
             <option value="브랜드경험디자인팀"></option>
@@ -159,11 +159,11 @@
           <input name="source" placeholder="전화 / 카카오 / 현장 등" />
         </div>
 
-        <!-- ✅ 매장명: P-SHOP 팀일 때만 드롭다운 / 그 외는 텍스트 -->
+        <!-- ✅ 매장명: P-SHOP 팀일 때만 드롭다운 -->
         <div class="field full">
           <label>매장명</label>
 
-          <!-- P-SHOP 전용 드롭다운 -->
+          <!-- P-SHOP 전용 드롭다운(직영 11개점) -->
           <select id="storeSelect" style="display:none;">
             <option value="">매장 선택</option>
             <option>논현4</option>
@@ -179,17 +179,14 @@
             <option>부산센텀4</option>
           </select>
 
-          <!-- 일반 팀용 텍스트 입력 -->
-          <input
-            id="storeInput"
-            placeholder="매장명을 직접 입력하세요"
-          />
+          <!-- 그 외 팀: 텍스트 입력 -->
+          <input id="storeInput" placeholder="매장명을 직접 입력하세요" />
 
           <div class="hint">
             ※ 매장 관련 내용이 아니라면 기재하지 않고 넘어가셔도 됩니다.
           </div>
 
-          <!-- 서버 전송용: 항상 이 값만 저장 -->
+          <!-- 서버 전송용 -->
           <input type="hidden" name="storeChannel" id="storeChannel" />
         </div>
 
@@ -280,21 +277,28 @@
   const storeInput  = document.getElementById("storeInput");
   const storeHidden = document.getElementById("storeChannel");
 
-  function isPSHOPTeam() {
-    return (teamInput.value || "").trim() === "유통경쟁력강화팀(P-SHOP)";
+  function normalizeTeam(v){
+    return (v || "").replace(/\s+/g, "").toUpperCase();
+  }
+
+  function isPSHOPTeam(){
+    const t = normalizeTeam(teamInput.value);
+    // 공백/대소문자/과거 오타 방어
+    return (
+      t === normalizeTeam("유통경쟁력강화팀(P-SHOP)") ||
+      t === normalizeTeam("유통경쟁력강화팀(P-SOHP)")
+    );
   }
 
   function toggleStoreUI(){
     if (isPSHOPTeam()) {
-      // P-SHOP: 드롭다운만
       storeSelect.style.display = "";
-      storeInput.style.display = "none";
+      storeInput.style.display  = "none";
       storeInput.value = "";
     } else {
-      // 그 외: 텍스트만
       storeSelect.style.display = "none";
       storeSelect.value = "";
-      storeInput.style.display = "";
+      storeInput.style.display  = "";
     }
     syncStoreHidden();
   }
@@ -312,13 +316,11 @@
   storeSelect.addEventListener("change", syncStoreHidden);
   storeInput.addEventListener("input", syncStoreHidden);
 
-  // 첫 로드 시 상태 세팅
+  document.addEventListener("DOMContentLoaded", toggleStoreUI);
   toggleStoreUI();
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    // 제출 직전 동기화
     syncStoreHidden();
 
     btn.disabled = true;
@@ -342,7 +344,7 @@
         msg.classList.add("ok");
         form.reset();
         storeHidden.value = "";
-        toggleStoreUI(); // reset 후 UI 재정렬
+        toggleStoreUI();
       } else {
         msg.textContent = "❌ 저장 실패";
         msg.classList.add("err");
@@ -357,5 +359,3 @@
 </script>
 </body>
 </html>
-
-
