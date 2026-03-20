@@ -344,6 +344,8 @@
     syncStoreHidden();
 
     btn.disabled = true;
+    btn.textContent = "저장 중...";
+    btn.style.background = "#aaa";
     msg.textContent = "";
     msg.className = "msg";
 
@@ -374,6 +376,8 @@
       msg.classList.add("err");
     } finally {
       btn.disabled = false;
+      btn.textContent = "저장";
+      btn.style.background = "#4f46e5";
     }
   });
 </script>
